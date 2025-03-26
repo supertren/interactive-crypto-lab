@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Interactive Cryptocurrency Lab{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { padding-top: 20px; }
+        .blockchain-block { 
+            border: 1px solid #ddd; 
+            padding: 10px; 
+            margin-bottom: 10px; 
+            border-radius: 5px;
+        }
+        .transaction { 
+            border: 1px solid #eee; 
+            padding: 8px; 
+            margin-bottom: 5px; 
+            border-radius: 3px;
+        }
+        .pending { background-color: #fff3cd; }
+        .confirmed { background-color: #d1e7dd; }
+        .rejected { background-color: #f8d7da; }
+        .monospace { font-family: monospace; }
+        .hash { word-break: break-all; }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="container">
+        <header class="mb-4">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="/">Crypto Lab</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/blockchain">Blockchain</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/wallets">Wallets</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/transactions">Transactions</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/mine">Mine</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+        
+        <footer class="mt-5 pt-3 border-top text-center text-muted">
+            <p>Interactive Cryptocurrency Lab &copy; 2025</p>
+        </footer>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

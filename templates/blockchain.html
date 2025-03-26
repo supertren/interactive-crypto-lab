@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Blockchain - Cryptocurrency Lab{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Blockchain Explorer</h1>
+        
+        <div class="alert alert-info">
+            <p><strong>Chain Length:</strong> {{ blockchain.get_chain_length() }}</p>
+            <p><strong>Is Valid:</strong> {{ "Yes" if blockchain.is_chain_valid() else "No" }}</p>
+            <p><strong>Mining Difficulty:</strong> {{ blockchain.difficulty }} ({{ blockchain.difficulty }} leading zeros)</p>
+        </div>
+        
+        <h2 class="mb-3">Blocks</h2>
+        
+        {% for block in blocks|reverse %}
+        <div class="blockchain-block">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Block #{{ block.index }}</h4>
+                    <p><strong>Timestamp:</strong> {{ block.timestamp }}</p>
+                    <p><strong>Transactions:</strong> {{ block.transactions|length }}</p>
+                    <p><strong>Nonce:</strong> {{ block.nonce }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Hash:</strong> <span class="hash">{{ block.hash }}</span></p>
+                    <p><strong>Previous Hash:</strong> <span class="hash">{{ block.previous_hash }}</span></p>
+                    <a href="/block/{{ block.index }}" class="btn btn-sm btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

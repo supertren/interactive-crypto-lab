@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Mining Status - Cryptocurrency Lab{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h1 class="mb-4">Mining Status</h1>
+        
+        <div class="card">
+            <div class="card-header">Mining Progress</div>
+            <div class="card-body">
+                <p><strong>Status:</strong> <span id="status">{{ status.status }}</span></p>
+                <p><strong>Block:</strong> <span id="block-index">{{ status.block_index }}</span></p>
+                
+                <div class="progress mb-3">
+                    <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" style="width: {{ status.progress }}%"></div>
+                </div>
+                
+                <div id="mining-details" style="display: {% if status.status == 'completed' %}block{% else %}none{% endif %}">
+                    <p><strong>Mining Time:</strong> <span id="mining-time">{{ status.mining_time|default('N/A') }}</span> seconds</p>
+                    <p><strong>Block Hash:</strong> <span id="block-hash" class="hash">{{ status.hash|default('N/A') }}</span></p>
+                    <p><strong>Transactions:</strong> <span id="tx-count">{{ status.transactions|default('N/A') }}</span></p>
+                </div>
+                
+                <div class="mt-3">
+                    <a id="view-block-btn" href="/block/{{ status.block_index }}" class="btn btn-primary" style="display: {% if status.status == 'completed' %}inline-block{% else %}none{% endif %}">View Block</a>
+                    <a href="/" class="btn btn-secondary">Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Update mining status every second
+    function updateMiningStatus() {
+        fetch('/api/mining_status')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('status').textContent = data.status;
+                document.getElementById('block-index').textContent = data.block_index;
+                document.getElementById('progress-bar').style.width = data.progress + '%';
+                
+                if (data.status === 'completed') {
+                    document.getElementById('mining-details').style.display = 'block';
+                    document.getElementById('mining-time').textContent = data.mining_time.toFixed(2);
+                    document.getElementById('block-hash').textContent = data.hash;
+                    document.getElementById('tx-count').textContent = data.transactions;
+                    
+                    const viewBlockBtn = document.getElementById('view-block-btn');
+                    viewBlockBtn.href = '/block/' + data.block_index;
+                    viewBlockBtn.style.display = 'inline-block';
+                    
+                    // Stop updating if mining is complete
+                    clearInterval(updateInterval);
+                }
+            });
+    }
+    
+    // Update immediately and then every second
+    updateMiningStatus();
+    const updateInterval = setInterval(updateMiningStatus, 1000);
+</script>
+{% endblock %}

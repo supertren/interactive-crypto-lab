@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Create Wallet - Cryptocurrency Lab{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h1 class="mb-4">Create New Wallet</h1>
+        
+        <div class="card">
+            <div class="card-body">
+                <p class="mb-4">Click the button below to generate a new wallet with a unique address.</p>
+                
+                <form method="post">
+                    <button type="submit" class="btn btn-success">Generate New Wallet</button>
+                    <a href="/wallets" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Wallet Details - Cryptocurrency Lab{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Wallet Details</h1>
+        
+        <div class="card mb-4">
+            <div class="card-header">Wallet Information</div>
+            <div class="card-body">
+                <p><strong>Address:</strong> <span class="monospace">{{ wallet.address }}</span></p>
+                <p><strong>Balance:</strong> {{ wallet.balance }}</p>
+                <div class="d-flex gap-2">
+                    <a href="/create_transaction?sender={{ wallet.address }}" class="btn btn-primary">Send Coins</a>
+                    <a href="/mine?miner={{ wallet.address }}" class="btn btn-warning">Mine as this Wallet</a>
+                </div>
+            </div>
+        </div>
+        
+        <h2 class="mb-3">Transaction History</h2>
+        
+        {% if transactions %}
+            {% for tx in transactions %}
+            <div class="transaction {{ tx.status }}">
+                <div class="row">
+                    <div class="col-md-8">
+                        {% if tx.sender == wallet.address %}
+                            <p><strong>Sent to:</strong> <a href="/wallet/{{ tx.recipient }}" class="monospace">{{ tx.recipient }}</a></p>
+                            <p><strong>Amount:</strong> -{{ tx.amount }}</p>
+                        {% else %}
+                            <p>
+                                <strong>Received from:</strong> 
+                                {% if tx.sender == "SYSTEM" %}
+                                    <span class="badge bg-info">SYSTEM</span>
+                                {% else %}
+                                    <a href="/wallet/{{ tx.sender }}" class="monospace">{{ tx.sender }}</a>
+                                {% endif %}
+                            </p>
+                            <p><strong>Amount:</strong> +{{ tx.amount }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <p><strong>Status:</strong> <span class="badge bg-{{ 'success' if tx.status == 'confirmed' else 'warning' if tx.status == 'pending' else 'danger' }}">{{ tx.status }}</span></p>
+                        <p><strong>Timestamp:</strong> {{ tx.timestamp }}</p>
+                        {% if tx.block_index is not none %}
+                            <p><strong>Block:</strong> <a href="/block/{{ tx.block_index }}">#{{ tx.block_index }}</a></p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info">No transactions for this wallet.</div>
+        {% endif %}
+        
+        <div class="mt-3">
+            <a href="/wallets" class="btn btn-primary">Back to Wallets</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

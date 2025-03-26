@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Cryptocurrency Lab{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Cryptocurrency Lab Dashboard</h1>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header">Blockchain Status</div>
+                    <div class="card-body">
+                        <p><strong>Chain Length:</strong> <span id="chain-length">{{ blockchain_length }}</span></p>
+                        <p><strong>Pending Transactions:</strong> <span id="pending-tx">{{ pending_transactions }}</span></p>
+                        <p><strong>Mining Status:</strong> <span id="mining-status">{{ mining_status.status }}</span></p>
+                        <div class="progress mb-3" id="mining-progress-container" style="display: {% if mining_status.status == 'mining' %}block{% else %}none{% endif %}">
+                            <div id="mining-progress" class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 role="progressbar" style="width: {{ mining_status.progress }}%"></div>
+                        </div>
+                        <a href="/blockchain" class="btn btn-primary">View Blockchain</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header">Wallets</div>
+                    <div class="card-body">
+                        <p><strong>Total Wallets:</strong> {{ wallets|length }}</p>
+                        <div class="list-group mb-3">
+                            {% for address in wallets[:3] %}
+                            <a href="/wallet/{{ address }}" class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between">
+                                    <div class="monospace text-truncate" style="max-width: 180px;">{{ address }}</div>
+                                    <span id="balance-{{ address[:8] }}">...</span>
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="/wallets" class="btn btn-primary">View All Wallets</a>
+                            <a href="/create_wallet" class="btn btn-success">Create Wallet</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header">Transactions</div>
+                    <div class="card-body">
+                        <p><strong>Pending Transactions:</strong> <span id="pending-tx2">{{ pending_transactions }}</span></p>
+                        <div class="d-flex justify-content-between">
+                            <a href="/transactions" class="btn btn-primary">View Transactions</a>
+                            <a href="/create_transaction" class="btn btn-success">Create Transaction</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Mining</div>
+                    <div class="card-body">
+                        <p>Mine a new block to confirm pending transactions.</p>
+                        <a href="/mine" class="btn btn-warning">Mine Block</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Update dashboard data every 2 seconds
+    function updateDashboard() {
+        // Update mining status
+        fetch('/api/mining_status')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('mining-status').textContent = data.status;
+                
+                // Update progress bar
+                if (data.status === 'mining') {
+                    document.getElementById('mining-progress-container').style.display = 'block';
+                    document.getElementById('mining-progress').style.width = data.progress + '%';
+                } else {
+                    document.getElementById('mining-progress-container').style.display = 'none';
+                }
+            });
+        
+        // Update blockchain info
+        fetch('/api/blockchain_info')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('chain-length').textContent = data.length;
+                document.getElementById('pending-tx').textContent = data.pending_transactions;
+                document.getElementById('pending-tx2').textContent = data.pending_transactions;
+            });
+        
+        // Update wallet balances
+        fetch('/api/wallet_balances')
+            .then(response => response.json())
+            .then(data => {
+                for (const [address, balance] of Object.entries(data)) {
+                    const balanceElement = document.getElementById('balance-' + address.substring(0, 8));
+                    if (balanceElement) {
+                        balanceElement.textContent = balance;
+                    }
+                }
+            });
+    }
+    
+    // Update immediately and then every 2 seconds
+    updateDashboard();
+    setInterval(updateDashboard, 2000);
+</script>
+{% endblock %}
